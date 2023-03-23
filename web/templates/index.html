@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {% block head %}
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css'
+    ) }}">
+    {% endblock %}
+</head>
+<body>
+{% block content %}
+{% if images | length > 0 %}
+    <ul>
+        {% for image in images %}
+        <li>
+            <div class="center">
+                <img src="{{ url_for('static', filename='images/' + user_id + '/' + image) }}" width="300" height="300">
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <div class="center">
+        <h1>Noting to show.</h1>
+    </div>
+{% endif %}
+{% endblock %}
+</body>
+</html>

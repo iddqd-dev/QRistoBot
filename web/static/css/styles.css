@@ -1,0 +1,18 @@
+body {
+    font-size: 20px;
+    text-align: center;
+}
+ul {
+    display: flex;
+    flex-wrap: wrap;
+}
+li {
+    display: inline;
+    padding: 20px;
+}
+
+.center {
+    margin: auto;
+    display: flex;
+    text-align: center;
+}
