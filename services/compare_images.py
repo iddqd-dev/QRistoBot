@@ -1,30 +1,28 @@
-import hashlib
 import os
-
-
-def get_file_hash(file_path):
-    with open(file_path, 'rb') as f:
-        file_hash = hashlib.sha256(f.read()).hexdigest()
-    return file_hash
-
+import tempfile
+import shutil
+from imagehash import average_hash
+from PIL import Image
 
 def compare_file_hashes(new_file, directory_path):
     """ Compare file with existing files in directory
     Args:
         new_file (string): File for comparing
-        directory_path (string): path to existing files
+        directory_path (string): Path to directory with existing files.
 
     Returns:
-        result (bool): result of comparing in bool
+        result (string): Name of the file in directory_path that matches the hash of new_file,
+             or new_file if no matching file is found.
     """
+    with tempfile.NamedTemporaryFile(delete=False) as tmp_file:
+        tmp_file_hash = average_hash(Image.open(new_file))
+        tmp_file.close()
+
     for image in os.listdir(directory_path):
-        file_existing = os.path.join(directory_path, image)
-        file_downloaded = os.path.join(directory_path, new_file)
-        hash_existing = get_file_hash(file_existing)
-        hash_downloaded = get_file_hash(file_downloaded)
-        if hash_existing == hash_downloaded:
-            print('Removing ' + file_downloaded)
-            print(file_existing)
-            os.remove(file_downloaded)
+        file_path = os.path.join(directory_path, image)
+        exist_file_hash = average_hash(Image.open(file_path))
+        if exist_file_hash == tmp_file_hash:
+            os.remove(new_file)
             return image
-    return new_file
+    shutil.move(new_file, directory_path)
+    return os.path.basename(new_file)

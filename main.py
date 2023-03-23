@@ -36,12 +36,13 @@ async def basic_help(message: types.Message):
 async def qr_recognize_document(message: types.Message):
     print(message)
     path = os.path.join(os.path.dirname(fr'{os.getcwd()}\web\static\images\{message.from_id}\\'))
-    filename = f'\\{message.document.file_unique_id}.png'
+    file_name = f'\\{message.document.file_unique_id}.png'
+    temp_file = os.path.join(os.path.dirname(fr'{os.getcwd()}\web\static\images\temp\\')) + file_name
     try:
         if message.document.mime_type == 'image/png' or message.document.mime_type == 'image/jpeg':
-            await message.document.download(destination_file=path + filename)
-            filename = compare_file_hashes(f'{message.document.file_unique_id}.png', path)
-            image = os.path.join(path, filename)
+            await message.document.download(destination_file=temp_file)
+            file_name = compare_file_hashes(temp_file, path)
+            image = os.path.join(path, file_name)
             await message.reply(qr_reader(image))
             logger.info(message.document)
         else:
@@ -56,11 +57,12 @@ async def qr_recognize_document(message: types.Message):
 @dispatcher.message_handler(content_types=['photo'])
 async def qr_recognize_photo(message: types.Message):
     path = os.path.join(os.path.dirname(fr'{os.getcwd()}\web\static\images\{message.from_id}\\'))
-    filename = f'\\{message.photo[1].file_unique_id}.png'
+    file_name = f'{message.photo[1].file_unique_id}.png'
+    temp_file = os.path.join(os.path.dirname(fr'{os.getcwd()}\web\static\images\temp\\')) + file_name
     try:
-        await message.photo[-1].download(destination_file=path + filename)
-        filename = compare_file_hashes(f'{message.photo[1].file_unique_id}.png', path)
-        image = os.path.join(path, filename)
+        await message.photo[-1].download(destination_file=temp_file)
+        file_name = compare_file_hashes(temp_file, path)
+        image = os.path.join(path, file_name)
         await message.reply(qr_reader(image))
         logger.info(message)
     except Exception as ex:
